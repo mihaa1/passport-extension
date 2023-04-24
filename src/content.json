@@ -35,5 +35,8 @@
   "results": {
     "userHasAppointment": "לא ניתן לקבוע תור כי כבר קיים תור פעיל",
     "scheduledSuccessfully": "התור נקבע בהצלחה"
+  },
+  "errors": {
+    "wrongURL": "כתובת האתר צריכה להתחיל ב- piba.myvisit.com"
   }
 }

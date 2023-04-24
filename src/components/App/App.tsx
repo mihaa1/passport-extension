@@ -18,6 +18,8 @@ import {
 } from '@src/validators/validators';
 import { ActionTypes } from '@src/platform-message';
 import Tab = Tabs.Tab;
+import { ErrorMsg } from '../Error/ErrorMsg';
+import { getErr } from '@src/utils/error-msgs';
 
 const { Title, Text } = Typography;
 
@@ -34,6 +36,7 @@ export const App: FunctionComponent = () => {
   });
   const [consent, setConsent] = useState(false);
   const [searching, setSearching] = useState(false);
+  const [isClickedStart, setIsClickedStart] = useState(false);
 
   useEffect(() => {
     storageService.getConsent().then(setConsent);
@@ -92,6 +95,12 @@ export const App: FunctionComponent = () => {
   };
 
   const start = async () => {
+    setIsClickedStart(true);
+    const err = await getErr();
+    if (err) {
+      return console.error('start(): err', err);
+    }
+
     const maybeMyVisitTab = await getMyVisitTab();
     if (maybeMyVisitTab) {
       await browser.tabs.sendMessage(maybeMyVisitTab.id!, { action: ActionTypes.StartSearch });
@@ -100,6 +109,8 @@ export const App: FunctionComponent = () => {
   };
 
   const stop = async () => {
+    setIsClickedStart(false);
+
     const maybeMyVisitTab = await getMyVisitTab();
     if (maybeMyVisitTab) {
       await browser.tabs.sendMessage(maybeMyVisitTab.id!, { action: ActionTypes.StopSearch });
@@ -155,6 +166,7 @@ export const App: FunctionComponent = () => {
       <div className={styles.consentContainer}>
         <Consent onConsentChanged={setUserConsent} consent={consent} />
       </div>
+      {isClickedStart && <ErrorMsg />}
       <div className={styles.buttonContainer}>
         {searching ? (
           <Button onClick={stop}>{Content.buttons.stopSearch}</Button>
